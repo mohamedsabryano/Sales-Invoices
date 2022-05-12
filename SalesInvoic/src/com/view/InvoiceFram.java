@@ -10,6 +10,7 @@ import com.controller.SelectTabel;
 import com.model.InvocieLine;
 import com.model.InvoiceHeader;
 import com.model.InvoiceHeaderTabelModel;
+import com.model.InvoiceLineModel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import javax.swing.JLabel;
@@ -175,21 +176,21 @@ public class InvoiceFram extends javax.swing.JFrame {
                         .addGap(7, 7, 7)
                         .addComponent(invoicename)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(invoicedate)
                             .addComponent(datainvoice))
                         .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(customername)
                             .addComponent(custname))
                         .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(totalline)
-                            .addComponent(invoicetotal))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(invoicetotal)
+                            .addComponent(totalline))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 407, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(Deleteinvoice)
@@ -272,11 +273,20 @@ public class InvoiceFram extends javax.swing.JFrame {
     private javax.swing.JLabel totalline;
     // End of variables declaration//GEN-END:variables
 private InvoiceActionListener actionListener=new InvoiceActionListener(this);
+private SelectTabel selectTabel = new SelectTabel(this);
 private ArrayList<InvoiceHeader> invoiceArray;
 private ArrayList<InvocieLine> invoiceLines;
 private InvoiceHeaderTabelModel headerTabelModel;
+private InvoiceLineModel lineModel;
+
+    public InvoiceLineModel getLineModel() {
+        return lineModel;
+    }
+    public void setLineModel(InvoiceLineModel lineModel) {
+        this.lineModel = lineModel;
+    }
+   
  public static SimpleDateFormat dateFormat=new SimpleDateFormat("dd-MM-yyyy");
- private SelectTabel selectTabel = new SelectTabel(this);
 
     public ArrayList<InvocieLine> getInvoiceLines() {
         return invoiceLines;
@@ -340,5 +350,9 @@ private InvoiceHeaderTabelModel headerTabelModel;
     public InvoiceActionListener getActionListener() {
         return actionListener;
     }
-
-    }
+    
+    
+    
+    
+    
+}

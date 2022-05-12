@@ -18,14 +18,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import static java.nio.file.Files.list;
 import java.nio.file.Path;
 import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import java.nio.file.Paths;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -42,6 +40,12 @@ public class InvoiceActionListener implements ActionListener{
         this.fram=fram;
     }
 
+    public InvoiceActionListener(HeaderDialog headerDialog, LineDialog lineDialog) {
+        this.headerDialog = headerDialog;
+        this.lineDialog = lineDialog;
+    }
+    
+ 
     @Override
     public void actionPerformed(ActionEvent e) {
  switch(e.getActionCommand()){
@@ -57,7 +61,7 @@ public class InvoiceActionListener implements ActionListener{
      case "Delete Invoice":
          creatDeleteInvoice();
      break;
-     case "New line":
+     case "New Line":
          creatNewline();
      break;
      case "Delete Line":
@@ -72,13 +76,9 @@ public class InvoiceActionListener implements ActionListener{
          case "Lineok":
              Lineok();
              break;
-             
          case "Linecancel":
              Linecancel();
                      break;
-     
-     
-
  }
     }
 
@@ -116,8 +116,8 @@ public class InvoiceActionListener implements ActionListener{
         
     }
     private void creatNewInvoice() {
-        HeaderDialog headerdialog =new HeaderDialog(fram);
-        headerdialog.setVisible(true);
+        headerDialog =new HeaderDialog(fram);
+        headerDialog.setVisible(true);
     }
 
     private void creatDeleteInvoice() {
@@ -139,14 +139,16 @@ public class InvoiceActionListener implements ActionListener{
         lineDialog.setVisible(true);
     }
     private void Deleteline() {
-        int selectlineindex = fram.getHeaderT().getSelectedRow();
+        int selectedInvoiceindex = fram.getHeaderT().getSelectedRow();
+        int selectlineindex = fram.getLineT().getSelectedRow();
         if (selectlineindex !=-1){
             fram.getInvoiceLines().remove(selectlineindex);
-            InvoiceLineModel lineTmodel = (InvoiceLineModel)fram.getHeaderT().getModel();
+            InvoiceLineModel lineTmodel = (InvoiceLineModel)fram.getLineT().getModel();
             lineTmodel.fireTableDataChanged();
             fram.getHeaderTabelModel().fireTableDataChanged();
+            fram.getHeaderT().setRowSelectionInterval(selectedInvoiceindex, selectedInvoiceindex);
         }
-        
+
     }
 
     private void LoadFiles() {
@@ -189,10 +191,21 @@ public class InvoiceActionListener implements ActionListener{
                  InvoiceHeader inv =fram.getInvObject(invcode);
                  InvocieLine line = new InvocieLine(str2, price, count, inv);
                  inv.getLines().add(line);
-      }
-         }
-             InvoiceHeaderTabelModel headerTabelModel=new InvoiceHeaderTabelModel(invoiceHeaders);
+                }
+             System.out.println("Headers File:");
+             for(String headerline:headerLines){
+                 System.out.println(headerline);
+             }
+             System.out.println("-----------------------------------");
+              System.out.println("Lines File:");
+              for(String lineLine : linelines){
+                  System.out.println(lineLine);
+              }
+         
              
+             }
+                
+             InvoiceHeaderTabelModel headerTabelModel=new InvoiceHeaderTabelModel(invoiceHeaders);
              fram.setHeaderTabelModel(headerTabelModel);
              fram.getHeaderT().setModel(headerTabelModel);
          } 
@@ -205,8 +218,8 @@ public class InvoiceActionListener implements ActionListener{
 
     private void NewLineok() {
         headerDialog.setVisible(false);
-        String custname = headerDialog.getCustNameField().getText();
-        String custdata = headerDialog.getInvDateField().getText();
+        String custname = headerDialog.getCustomerField().getText();
+        String custdata = headerDialog.getDateField().getText();
         Date d =new Date();
         try {
             d =InvoiceFram.dateFormat.parse(custdata);
@@ -215,11 +228,12 @@ public class InvoiceActionListener implements ActionListener{
         }
         int invNum =0;
         for(InvoiceHeader inv :fram.getInvoiceArray()){
-            if (inv.getNum() > invNum) invNum = inv.getNum();
+            if (inv.getNum() > invNum) { invNum = inv.getNum();}
         }
         invNum++;
         InvoiceHeader NewInv = new InvoiceHeader(invNum, custname, d);
         fram.getInvoiceArray().add(NewInv);
+        fram.getHeaderTabelModel().fireTableDataChanged();
         headerDialog.dispose();
         headerDialog = null;
     }
@@ -232,9 +246,9 @@ public class InvoiceActionListener implements ActionListener{
 
     private void Lineok() {
           lineDialog.setVisible(false);
-          String name =lineDialog.getItemName().getText();
-          String sab =lineDialog.getItemcount().getText();
-          String sab2=lineDialog.getItemprice().getText();
+          String name =lineDialog.getItemNameField().getText();
+          String sab =lineDialog.getItemCountField().getText();
+          String sab2=lineDialog.getItemPriceField().getText();
           int count =1;
           double price=1;
           
@@ -252,7 +266,6 @@ public class InvoiceActionListener implements ActionListener{
             if(selectinHeader != -1){
                InvoiceHeader inHeader = fram.getInvoiceArray().get(selectinHeader);
             InvocieLine line = new InvocieLine(name, price, count, inHeader);
-            inHeader.getLines().add(line);
             fram.getInvoiceLines().add(line);
             InvoiceLineModel inLineModel =(InvoiceLineModel)fram.getLineT().getModel();
              inLineModel.fireTableDataChanged();
@@ -260,7 +273,7 @@ public class InvoiceActionListener implements ActionListener{
             }
             fram.getHeaderT().setRowSelectionInterval(selectinHeader, selectinHeader);
              lineDialog.dispose();
-        lineDialog = null;
+             lineDialog = null;
         
   
         }  
